@@ -5,7 +5,7 @@ const Table = ({ data, columns }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ data, columns });
 
   return (
-    <div class="overflow-x-auto">
+    <div className="overflow-x-auto">
     <table className='table' {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (

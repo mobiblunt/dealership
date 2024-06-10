@@ -1,6 +1,8 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useMemo} from 'react'
 import Table from '../components/Table'
 import {FaEdit, FaTrash} from 'react-icons/fa' 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
     onSnapshot,
     addDoc,
@@ -13,6 +15,13 @@ import { carsCollection, db } from "../firebase"
   
 
 const Cars = () => {
+
+    const notifyAdd = () => toast.info("Car Added Succesfully!");
+    const notifyUpdate = () => toast.success("Car Updated Succesfully!");
+    const notifyDel = () => toast.warn("Car Deleted Succesfully!");
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const columns = [
         { Header: 'ID', accessor: 'id' },
         { Header: 'Name', accessor: 'name' },
@@ -33,7 +42,7 @@ const Cars = () => {
         year: '',
       });
       const [dat, setDat] = useState([])
-      const [add, setAdd] = useState(false)
+      const [add, setAdd] = useState([])
       const [itemEdit, setItemEdit] = useState({
         item: {},
         edit: false,
@@ -42,6 +51,22 @@ const Cars = () => {
       const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
       };
+
+      const filteredData = useMemo(() => {
+        return dat.filter((item) => {
+          const itemData = Object.values(item).join('').toLowerCase();
+          return itemData.includes(searchTerm.toLowerCase());
+        });
+      }, [dat, searchTerm]);
+
+      const handleSearch = (e) => {
+        setSearchQuery(e.target.value);
+      };
+
+      const setSearch = (e) => {
+        e.preventDefault();
+        setDat(filteredData)
+      }
 
       function filterObjectProperty(obj, excludedProp) {
         const entries = Object.entries(obj);
@@ -61,9 +86,10 @@ const Cars = () => {
           edit: false,
       })
       
-      
+      notifyUpdate()
           } else {
         await addDoc(carsCollection, formData);
+        notifyAdd()
     }
         setFormData({
             name: '',
@@ -72,7 +98,7 @@ const Cars = () => {
           });
       
        document.getElementById('my_modal_3').close()
-        
+       
       };
 
       const editItem = (obj) => {
@@ -89,6 +115,7 @@ const Cars = () => {
         
         const exactLocationOfItemInDB = doc(db, "cars", itemId);
         deleteDoc(exactLocationOfItemInDB);
+        notifyDel()
       };
     
 
@@ -102,6 +129,7 @@ const Cars = () => {
               id: doc.id
           }))
           setDat(notesArr);
+          setAdd(notesArr);
           
         });
         
@@ -165,12 +193,18 @@ const Cars = () => {
             </form>
   </div>
 </dialog>
-<label class="input input-bordered flex items-center gap-2">
-  <input type="text" class="grow" placeholder="Search" />
+<div className='flex' >
+<label className="input input-bordered flex items-center gap-2">
+  <input type="search" value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+ class="grow" placeholder="Search" />
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" /></svg>
 </label>
+
+</div>
     </div>
-    <Table data={dat} columns={columns} />
+    <Table data={filteredData} columns={columns} />
+    <ToastContainer />
     </>
   )
 }

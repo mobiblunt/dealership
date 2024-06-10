@@ -3,7 +3,7 @@ import { useTable } from 'react-table';
 
 const Table = ({ data, columns }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ data, columns });
-
+ console.log()
   return (
     <div className="overflow-x-auto">
     <table className='table' {...getTableProps()}>

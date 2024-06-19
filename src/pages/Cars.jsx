@@ -16,12 +16,10 @@ import { carsCollection, db } from "../firebase"
 
 const Cars = () => {
 
-    const notifyAdd = () => toast.info("Car Added Succesfully!");
-    const notifyUpdate = () => toast.success("Car Updated Succesfully!");
-    const notifyDel = () => toast.warn("Car Deleted Succesfully!");
+    
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
+    
     const columns = [
         { Header: 'ID', accessor: 'id' },
         { Header: 'Name', accessor: 'name' },
@@ -47,6 +45,11 @@ const Cars = () => {
         item: {},
         edit: false,
     })
+
+
+    const notifyAdd = () => toast.info("Car Added Succesfully!");
+    const notifyUpdate = () => toast.success("Car Updated Succesfully!");
+    const notifyDel = () => toast.warn("Car Deleted Succesfully!");
     
       const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -59,15 +62,9 @@ const Cars = () => {
         });
       }, [dat, searchTerm]);
 
-      const handleSearch = (e) => {
-        setSearchQuery(e.target.value);
-      };
+      
 
-      const setSearch = (e) => {
-        e.preventDefault();
-        setDat(filteredData)
-      }
-
+      
       function filterObjectProperty(obj, excludedProp) {
         const entries = Object.entries(obj);
         const filteredEntries = entries.filter(([key]) => key !== excludedProp);
